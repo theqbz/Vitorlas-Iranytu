@@ -1,5 +1,6 @@
 # Vitorlás iránytű
-Eltérés számítása a kívánt irány és a haladási irány között Arduino platformon, LCD kijelzővel. Videó a működésről: [demo.mp4](demo.mp4)
+Eltérés számítása a kívánt irány és a haladási irány között Arduino platformon, LCD kijelzővel.  
+Videó a működésről: [demo.mp4](demo.mp4)
 
 ## Breadboard
 ![Áramkör fotó](aramkor_bb.png)
