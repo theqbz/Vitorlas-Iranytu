@@ -3,11 +3,12 @@
 #define BI_PIN A4
 #define MI_PIN A5
 
+
 short beallitottIrany, mertIrany, elteres;
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
-// a fok ° jel az LCD-re
+// fok ° jel az LCD-re
 byte fok[8] = {
   B01110,
   B01010,
@@ -17,6 +18,7 @@ byte fok[8] = {
   B00000,
   B00000,
 };
+
 
 void setup() {
   Serial.begin(9600);
