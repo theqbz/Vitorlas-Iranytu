@@ -1,12 +1,19 @@
 #include <LiquidCrystal.h>
 
+// Arduino PIN kiosztás
 #define BI_PIN A4
 #define MI_PIN A5
+#define LCD_D7  2
+#define LCD_D6  3
+#define LCD_D5  4
+#define LCD_D4  5
+#define LCD_E  11
+#define LCD_RS 12
 
 
 short beallitottIrany, mertIrany, elteres;
 
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+LiquidCrystal lcd(LCD_RS, LCD_E, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
 // fok ° jel az LCD-re
 byte fok[8] = {
@@ -21,7 +28,6 @@ byte fok[8] = {
 
 
 void setup() {
-  Serial.begin(9600);
   lcd.begin(16, 2);
   lcd.createChar(0, fok);
 }
@@ -47,7 +53,7 @@ void loop() {
 
   // KIÍRANDÓ ADATOK ÖSSZEÁLLÍTÁSA
   // ez a rész nem fontos, csak az egyszerűbb pozícionálás miatt van
-  String kiC = "C: ";
+  String kiC = "C:";
   if (beallitottIrany > 99) {
     kiC += beallitottIrany;
   }
@@ -59,7 +65,7 @@ void loop() {
     kiC += "00";
     kiC += beallitottIrany;
   }
-  String kiM = "M: ";
+  String kiM = "M:";
   if (mertIrany > 99) {
     kiM += mertIrany;
   }
@@ -71,7 +77,7 @@ void loop() {
     kiM += "00";
     kiM += mertIrany;
   }
-  String kiE = "elteres: ";
+  String kiE = "elteres:";
   kiE += elteres;
 
   // ADATOK KIÍRÁSA
