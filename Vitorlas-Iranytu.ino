@@ -53,7 +53,7 @@ void loop() {
 
   // KIÍRANDÓ ADATOK ÖSSZEÁLLÍTÁSA
   // ez a rész nem fontos, csak az egyszerűbb pozícionálás miatt van
-  String kiC = "C:";
+  String kiC = "C: ";
   if (beallitottIrany > 99) {
     kiC += beallitottIrany;
   }
@@ -65,7 +65,7 @@ void loop() {
     kiC += "00";
     kiC += beallitottIrany;
   }
-  String kiM = "M:";
+  String kiM = "M: ";
   if (mertIrany > 99) {
     kiM += mertIrany;
   }
@@ -77,7 +77,7 @@ void loop() {
     kiM += "00";
     kiM += mertIrany;
   }
-  String kiE = "elteres:";
+  String kiE = "elteres: ";
   kiE += elteres;
 
   // ADATOK KIÍRÁSA
