@@ -1,17 +1,17 @@
 #include <LiquidCrystal.h>
 
 // Arduino PIN kiosztás
-#define BI_PIN A4
-#define MI_PIN A5
-#define LCD_D7  2
-#define LCD_D6  3
-#define LCD_D5  4
-#define LCD_D4  5
-#define LCD_E  11
-#define LCD_RS 12
+#define BRG_PIN A4
+#define HDG_PIN A5
+#define LCD_D7   2
+#define LCD_D6   3
+#define LCD_D5   4
+#define LCD_D4   5
+#define LCD_E   11
+#define LCD_RS  12
 
 
-short beallitottIrany, mertIrany, elteres;
+short bearing, heading, turn;
 
 LiquidCrystal lcd(LCD_RS, LCD_E, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
@@ -33,62 +33,70 @@ void setup() {
 }
 
 void loop() {
-  // ADATOK BEOLVASÁSA
-  // az irányítűt és a GPS mérését két potméter helyettesíti ezért van a map(), egyébként nem kellene
-  beallitottIrany = map(analogRead(BI_PIN), 0, 1023, 0, 360);
-  mertIrany = map(analogRead(MI_PIN), 0, 1023, 0, 360);
+  
+  // ADATOK BEOLVASÁSA ÉS SZÉLSŐ ÉRTÉKEK LEVÁGÁSA
+  // Az iránytűt és a GPS mérését két potméter helyettesíti ezért van a map() és a constrain(),
+  // egyébként, ha a GPS adatok 0 és 359 fok közötti értéket adnak, akkor azok elhagyhatók.
+  // A constrain()-t nem lehet kombinálni semmivel, annak külön utasításnak kell lennie.
+  // A végén az If() kell és a végén kell, tehát nem jó, ha a map()-ban 360 helyett 359 van.
+  
+  bearing = analogRead(BRG_PIN);
+  heading = analogRead(HDG_PIN);
+  bearing = constrain(bearing, 0, 1023);
+  heading = constrain(heading, 0, 1023);
+  bearing = map(bearing, 0, 1023, 0, 360);
+  heading = map(heading, 0, 1023, 0, 360);
+  if (bearing > 359) bearing = 0;
+  if (heading > 359) heading = 0;
 
-  // SZÉLSŐ ÉRTÉKEK LEVÁGÁSA
-  // Elvileg megy 360-nal is a számítás, de érdemes azt nullára átírni
-  // (a constrain-es sorok elhagyhatók, azok csak a potméterek bizonytalanságai miatt vannak!)
-  if (beallitottIrany > 359) beallitottIrany = 0;
-  constrain (beallitottIrany, 0, 359);
-  if (mertIrany > 359) mertIrany = 0;
-  constrain (mertIrany, 0, 359);
-
-  // ELTÉRÉS KISZÁMÍTÁSA
+  // ELTÉRÉS (TURN) SZÁMÍTÁSA
   // más a képlet, ha az irányok különbségének abszolútértéke nagyobb, mint 180
-  if (abs(mertIrany - beallitottIrany) > 180) elteres = mertIrany - beallitottIrany - (360 * (abs(mertIrany - beallitottIrany) / (mertIrany - beallitottIrany)));
-  else elteres = mertIrany - beallitottIrany;
+  
+  if (abs(heading - bearing) > 180) turn = heading - bearing - (360 * (abs(heading - bearing) / (heading - bearing)));
+  else turn = heading - bearing;
 
-  // KIÍRANDÓ ADATOK ÖSSZEÁLLÍTÁSA
-  // ez a rész nem fontos, csak az egyszerűbb pozícionálás miatt van
-  String kiC = "C: ";
-  if (beallitottIrany > 99) {
-    kiC += beallitottIrany;
+
+
+  // ADATOK KIÍRÁSA LCD-RE
+  // ez a rész rakja össze a kiírandó szöveget
+  String kiB = "B: ";
+  if (bearing > 99) {
+    kiB += bearing;
   }
-  else if (beallitottIrany > 9) {
-    kiC += "0";
-    kiC += beallitottIrany;
+  else if (bearing > 9) {
+    kiB += "0";
+    kiB += bearing;
   }
   else {
-    kiC += "00";
-    kiC += beallitottIrany;
+    kiB += "00";
+    kiB += bearing;
   }
-  String kiM = "M: ";
-  if (mertIrany > 99) {
-    kiM += mertIrany;
+
+  String kiH = "H: ";
+  if (heading > 99) {
+    kiH += heading;
   }
-  else if (mertIrany > 9) {
-    kiM += "0";
-    kiM += mertIrany;
+  else if (heading > 9) {
+    kiH += "0";
+    kiH += heading;
   }
   else {
-    kiM += "00";
-    kiM += mertIrany;
+    kiH += "00";
+    kiH += heading;
   }
-  String kiE = "elteres: ";
-  kiE += elteres;
 
-  // ADATOK KIÍRÁSA
+  String kiT = "TRN: ";
+  kiT += turn;
+
+  // ez kiírja LCD-re
   lcd.setCursor(0, 0);
-  lcd.print(kiC);
+  lcd.print(kiB);
   lcd.write(byte(0));
   lcd.setCursor(9, 0);
-  lcd.print(kiM);
+  lcd.print(kiH);
   lcd.write(byte(0));
   lcd.setCursor(0, 1);
-  lcd.print(kiE);
+  lcd.print(kiT);
   lcd.write(byte(0));
   lcd.print("     ");   // + 5 'space' takarítani
 }
